@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work Page</title>
+
+  <style>
+    :root{
+      --bg:#d9d9d9;
+      --text:#111111;
+      --muted:#5f5f5f;
+      --footer:#c8c8c8;
+      --shadow:0 14px 40px rgba(0,0,0,.12);
+
+      --burger-size:64px;
+      --burger-bar:32px;
+      --burger-bar-mid:24px;
+      --burger-bar-short:16px;
+      --burger-rest:#7a7a7a;
+      --burger-hover:#000000;
+
+      --card-bg:rgba(255,255,255,.22);
+      --card-border:rgba(255,255,255,.42);
+
+      --panel-dark:rgba(18,18,18,.88);
+      --panel-border:rgba(255,255,255,.14);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,.72), transparent 28%),
+        radial-gradient(circle at 80% 0%, rgba(255,255,255,.36), transparent 22%),
+        linear-gradient(180deg, #f2f2f2 0%, #d9d9d9 35%, #bebebe 100%);
+      overflow-x:hidden;
+      position:relative;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(135deg,
+          rgba(255,255,255,.24) 0%,
+          rgba(255,255,255,.08) 22%,
+          rgba(255,255,255,0) 40%,
+          rgba(0,0,0,.05) 68%,
+          rgba(255,255,255,.16) 100%);
+      mix-blend-mode:screen;
+      opacity:.72;
+      z-index:0;
+    }
+
+    a{color:inherit; text-decoration:none}
+    img, video, iframe{max-width:100%; display:block}
+
+    main,
+    .site-footer{
+      position:relative;
+      z-index:1;
+    }
+
+    /* Hero */
+    .hero{
+      min-height:100vh;
+      position:relative;
+      overflow:hidden;
+      background:#000;
+    }
+
+    .hero-image{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      background:#000;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.72) 0%,
+          rgba(0,0,0,0.38) 40%,
+          rgba(0,0,0,0.58) 100%
+        );
+      z-index:1;
+    }
+
+    .hero-topbar{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      z-index:25;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      pointer-events:none;
+      gap:16px;
+    }
+
+    .hero-logo{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:auto;
+      flex:0 0 auto;
+    }
+
+    .hero-logo img{
+      display:block;
+      width:120px;
+      height:auto;
+      object-fit:contain;
+    }
+
+    .nav-shell{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      pointer-events:auto;
+      justify-content:flex-end;
+    }
+
+    /* Burger button */
+    .nav-toggle{
+      width:var(--burger-size);
+      height:var(--burger-size);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:flex-end;
+      gap:8px;
+      background:transparent;
+      border:0;
+      padding:0 10px 0 0;
+      cursor:pointer;
+      position:relative;
+      z-index:30;
+      outline:none;
+    }
+
+    .nav-toggle:focus-visible{
+      outline:2px solid rgba(255,255,255,.45);
+      outline-offset:4px;
+      border-radius:14px;
+    }
+
+    .burger-line{
+      height:4px;
+      border-radius:999px;
+      background:var(--burger-rest);
+      transition:
+        transform .22s ease,
+        width .22s ease,
+        background .22s ease,
+        opacity .22s ease;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .line-1{ width:var(--burger-bar); }
+    .line-2{ width:var(--burger-bar-mid); }
+    .line-3{ width:var(--burger-bar-short); }
+
+    .nav-toggle:hover .burger-line,
+    .nav-toggle:focus-visible .burger-line{
+      background:var(--burger-hover);
+    }
+
+    .nav-toggle.open .line-1{
+      width:30px;
+      transform:translateY(12px) rotate(45deg);
+    }
+
+    .nav-toggle.open .line-2{
+      opacity:0;
+      transform:translateX(8px);
+    }
+
+    .nav-toggle.open .line-3{
+      width:30px;
+      transform:translateY(-12px) rotate(-45deg);
+    }
+
+    /* Drawer */
+    .nav-panel{
+      position:fixed;
+      top:0;
+      right:0;
+      width:min(420px, calc(100vw - 28px));
+      height:100vh;
+      padding:18px;
+      background:var(--panel-dark);
+      border-left:1px solid var(--panel-border);
+      backdrop-filter:blur(14px);
+      box-shadow:-22px 0 54px rgba(0,0,0,.28);
+      transform:translateX(102%);
+      transition:transform .28s ease;
+      z-index:40;
+      overflow:auto;
+    }
+
+    .nav-panel.open{
+      transform:translateX(0);
+    }
+
+    .nav-panel-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:18px;
+      padding:0 4px 14px;
+      border-bottom:1px solid rgba(255,255,255,.12);
+    }
+
+    .nav-panel-title{
+      color:#fff;
+      font-size:12px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      font-weight:800;
+    }
+
+    .nav-close{
+      width:42px;
+      height:42px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:background .18s ease, transform .18s ease, border-color .18s ease;
+      flex:0 0 auto;
+    }
+
+    .nav-close:hover,
+    .nav-close:focus-visible{
+      background:rgba(255,255,255,.14);
+      border-color:rgba(255,255,255,.2);
+      transform:translateY(-1px);
+      outline:none;
+    }
+
+    .nav-close span{
+      font-size:28px;
+      line-height:1;
+      transform:translateY(-1px);
+    }
+
+    .nav-links{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .nav-link{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 15px;
+      border-radius:16px;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.08);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      transition:background .18s ease, transform .18s ease, border-color .18s ease;
+      min-height:50px;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible{
+      background:rgba(255,255,255,.16);
+      border-color:rgba(255,255,255,.18);
+      transform:translateX(-2px);
+      outline:none;
+    }
+
+    .nav-link small{
+      opacity:.72;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    .nav-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.2);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .22s ease;
+      z-index:35;
+    }
+
+    .nav-overlay.open{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .hero-inner{
+      position:relative;
+      z-index:2;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:120px 24px 80px;
+      text-align:center;
+      color:#fff;
+    }
+
+    .hero h1{
+      margin:0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size:clamp(3rem, 8vw, 7.25rem);
+      font-weight:500;
+      line-height:.92;
+      letter-spacing:-.04em;
+      text-wrap:balance;
+      text-shadow:0 8px 24px rgba(0,0,0,.28);
+    }
+
+    .scroll-indicator{
+      position:absolute;
+      z-index:2;
+      left:50%;
+      bottom:28px;
+      transform:translateX(-50%);
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      opacity:.92;
+    }
+
+    .scroll-indicator .chev{
+      width:16px;
+      height:16px;
+      border-right:2px solid #fff;
+      border-bottom:2px solid #fff;
+      transform:rotate(45deg);
+    }
+
+    /* Work section */
+    .work{
+      padding:72px 24px 34px;
+      background:transparent;
+    }
+
+    .container{
+      width:min(1180px, 100%);
+      margin:0 auto;
+    }
+
+    .section-title{
+      margin:0 0 14px;
+      font-size:clamp(2.5rem, 6vw, 5rem);
+      line-height:.92;
+      font-weight:900;
+      letter-spacing:-.05em;
+      text-transform:uppercase;
+      text-shadow:0 1px 0 rgba(255,255,255,.35);
+    }
+
+    .section-copy{
+      margin:0 0 22px;
+      max-width:720px;
+      color:#555;
+      line-height:1.8;
+      font-size:1rem;
+    }
+
+    .work-nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:0 0 28px;
+    }
+
+    .filter-btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.5);
+      background:rgba(255,255,255,.18);
+      color:#222;
+      padding:10px 16px;
+      border-radius:999px;
+      font-size:.92rem;
+      font-weight:700;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      cursor:pointer;
+      backdrop-filter:blur(8px);
+      box-shadow:0 8px 24px rgba(0,0,0,.06);
+      transition:transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .filter-btn:hover{
+      transform:translateY(-1px);
+      background:rgba(255,255,255,.28);
+      border-color:rgba(255,255,255,.72);
+    }
+
+    .filter-btn.active{
+      background:rgba(255,255,255,.52);
+      border-color:rgba(255,255,255,.9);
+      color:#111;
+    }
+
+    .work-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:24px;
+    }
+
+    .work-card{
+      display:block;
+      background:var(--card-bg);
+      border:1px solid var(--card-border);
+      border-radius:18px;
+      backdrop-filter:blur(6px);
+      overflow:hidden;
+    }
+
+    .work-card .thumb{
+      aspect-ratio:4 / 5;
+      border-radius:18px;
+      overflow:hidden;
+      background:rgba(255,255,255,.28);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px;
+    }
+
+    .work-card .thumb img,
+    .work-card .thumb video,
+    .work-card .thumb iframe{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      transition:transform .35s ease;
+      display:block;
+      border-radius:12px;
+      border:0;
+    }
+
+    .work-card:hover .thumb img,
+    .work-card:hover .thumb video,
+    .work-card:hover .thumb iframe{
+      transform:scale(1.02);
+    }
+
+    .work-card .meta{
+      padding:12px 14px 14px;
+    }
+
+    .work-card .name{
+      display:block;
+      font-size:clamp(.95rem, 1.2vw, 1.2rem);
+      font-weight:900;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      line-height:1.3;
+      text-shadow:0 1px 0 rgba(255,255,255,.35);
+    }
+
+    .work-card .sub{
+      display:block;
+      margin-top:4px;
+      color:#555;
+      font-size:.95rem;
+      line-height:1.5;
+    }
+
+    .video-link{
+      display:inline-flex;
+      margin-top:10px;
+      font-size:.85rem;
+      font-weight:700;
+      text-decoration:underline;
+      text-underline-offset:3px;
+      color:#111;
+    }
+
+    .video-link:hover{
+      opacity:.8;
+    }
+
+    .work-card[hidden]{
+      display:none !important;
+    }
+
+    /* Footer */
+    .site-footer{
+      margin-top:56px;
+      background:linear-gradient(180deg, #d4d4d4 0%, #c2c2c2 100%);
+      border-top:1px solid rgba(255,255,255,.55);
+      padding:18px 24px;
+      font-size:14px;
+    }
+
+    .footer-inner{
+      width:min(1180px, 100%);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .footer-links{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      color:#222;
+      flex-wrap:wrap;
+    }
+
+    .footer-links a:hover{text-decoration:underline}
+
+    .back-top{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      color:#000;
+      font-weight:500;
+      white-space:nowrap;
+    }
+
+    .back-top .arrow{
+      font-size:26px;
+      line-height:1;
+      transform:translateY(-1px);
+    }
+
+    .copyright{
+      color:#111;
+      white-space:nowrap;
+    }
+
+    /* Medium screens */
+    @media (max-width: 899px){
+      .work-grid{grid-template-columns:1fr}
+      .hero-topbar{
+        top:10px;
+        left:10px;
+        right:10px;
+      }
+      :root{
+        --burger-size:58px;
+        --burger-bar:29px;
+        --burger-bar-mid:22px;
+        --burger-bar-short:14px;
+      }
+      .hero-logo img{
+        width:64px;
+      }
+      .nav-panel{
+        width:min(420px, calc(100vw - 20px));
+      }
+    }
+
+    /* Mobile screens */
+    @media (max-width: 640px){
+      .hero-inner{
+        padding:120px 18px 72px;
+      }
+
+      .work{
+        padding:54px 16px 24px;
+      }
+
+      .hero-logo img{
+        width:102px;
+      }
+
+      .work-grid{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        gap:12px;
+      }
+
+      .work-card .thumb{
+        aspect-ratio:1 / 1.2;
+        padding:8px;
+      }
+
+      .work-card .name{
+        font-size:.85rem;
+      }
+
+      .work-card .sub{
+        font-size:.8rem;
+      }
+
+      .nav-panel{
+        width:100vw;
+        border-left:0;
+        border-radius:0;
+      }
+    }
+
+    @media (max-width: 520px){
+      .work-grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+
+<body id="top">
+  <main>
+    <section class="hero">
+      <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
+      <div class="hero-topbar">
+        <a class="hero-logo" href="index.html" aria-label="Home">
+          <img src="images/logo.png" alt="Logo" />
+        </a>
+
+        <div class="nav-shell">
+          <button
+            class="nav-toggle"
+            id="navToggle"
+            type="button"
+            aria-label="Open navigation"
+            aria-expanded="false"
+            aria-controls="navPanel"
+          >
+            <span class="burger-line line-1" aria-hidden="true"></span>
+            <span class="burger-line line-2" aria-hidden="true"></span>
+            <span class="burger-line line-3" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
+      <nav class="nav-panel" id="navPanel" aria-label="Page links">
+        <div class="nav-panel-header">
+          <div class="nav-panel-title">Work</div>
+          <button class="nav-close" id="navClose" type="button" aria-label="Close navigation">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+
+        <div class="nav-links">
+          <a class="nav-link" href="index.html"><span>Work</span><a>
+          <a class="nav-link" href="ourdna.html"><span>DNA</span></a>
+          <a class="nav-link" href="phy.html"><span>Philosophy</span></a>
+          <a class="nav-link" href="service.html"><span>Service Offering</span></a>
+          <a class="nav-link" href="ads.html"><span>Advertising</span></a>
+          <a class="nav-link" href="media.html"><span>Media Management</span></a>
+          <a class="nav-link" href="how.html"><span>How We Work</span></a>
+          <a class="nav-link" href="howit.html"><span>Why It Works</span></a>
+          <a class="nav-link" href="contact.html"><span>Contact Us</span></a>
+        </div>
+      </nav>
+
+      <img
+        class="hero-image"
+        src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1800&q=80"
+        alt="Hero image"
+      />
+
+      <div class="hero-inner">
+        <h1>Elegant Visual Work</h1>
+      </div>
+
+      <a class="scroll-indicator" href="#work" aria-label="Scroll to work section">
+        <span>Scroll</span>
+        <span class="chev" aria-hidden="true"></span>
+      </a>
+    </section>
+
+    <section class="work" id="work">
+      <div class="container">
+        <h2 class="section-title">Our Work</h2>
+        
+
+        <div class="work-nav" aria-label="Work filters">
+          <button class="filter-btn active" type="button" data-filter="all">All</button>
+          <button class="filter-btn" type="button" data-filter="images">Images</button>
+          <button class="filter-btn" type="button" data-filter="videos">Videos</button>
+        </div>
+
+        <div class="work-grid" id="workGrid">
+          <a class="work-card" href="#" data-type="images">
+            <div class="thumb">
+              <img src="images/Screenshot 2026-03-11 163849 8.png" alt="Brand project" loading="lazy" />
+            </div>
+            <div class="meta">
+              <span class="name">Brand Project</span>
+              <span class="sub">Image / Campaign direction</span>
+            </div>
+          </a>
+
+          <article class="work-card" data-type="videos">
+            <div class="thumb">
+              <iframe
+                src="https://www.youtube.com/embed/kHbPyX8V5eY?rel=0&modestbranding=1"
+                title="Motion Project YouTube video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                loading="lazy">
+              </iframe>
+            </div>
+            <div class="meta">
+              <span class="name">Motion Project</span>
+              <span class="sub">Video / Brand film</span>
+              <a class="video-link" href="https://youtu.be/kHbPyX8V5eY" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+            </div>
+          </article>
+
+          <a class="work-card" href="#" data-type="images">
+            <div class="thumb">
+              <img src="images/Screenshot 2026-03-11 163849 6.png" alt="Campaign project" loading="lazy" />
+            </div>
+            <div class="meta">
+              <span class="name">Campaign Project</span>
+              <span class="sub">Image / Editorial style</span>
+            </div>
+          </a>
+
+          <article class="work-card" data-type="videos">
+            <div class="thumb">
+              <iframe
+                src="https://www.youtube.com/embed/R9l0G8lA3iE?rel=0&modestbranding=1"
+                title="Fashion Motion YouTube video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                loading="lazy">
+              </iframe>
+            </div>
+            <div class="meta">
+              <span class="name">Fashion Motion</span>
+              <span class="sub">Video / Visual rhythm</span>
+              <a class="video-link" href="https://youtu.be/R9l0G8lA3iE" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+            </div>
+          </article>
+
+          <a class="work-card" href="#" data-type="images">
+            <div class="thumb">
+              <img src="images/Screenshot 2026-03-11 163849 5.png" alt="Luxury project" loading="lazy" />
+            </div>
+            <div class="meta">
+              <span class="name">Luxury Project</span>
+              <span class="sub">Image / Premium look</span>
+            </div>
+          </a>
+
+          <a class="work-card" href="#" data-type="images">
+            <div class="thumb">
+              <img src="images/Screenshot 2026-03-11 163849 4.png" alt="Film project" loading="lazy" />
+            </div>
+            <div class="meta">
+              <span class="name">Film Project</span>
+              <span class="sub">Image / Cinematic frame</span>
+            </div>
+          </a>
+ <a class="work-card" href="#" data-type="videos">
+            <div class="thumb">
+              <video muted loop playsinline controls preload="metadata" >
+                <source src="videos/WhatsApp Video 2026-06-01 at 1.19.05 PM.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="meta">
+              <span class="name">Fashion Motion</span>
+              <span class="sub">Video / Visual rhythm</span>
+            </div>
+          </a>
+
+          <article class="work-card" data-type="videos">
+            <div class="thumb">
+              <iframe
+                src="https://www.youtube.com/embed/TF3xlW-9c7E?rel=0&modestbranding=1"
+                title="Lifestyle Motion YouTube video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                loading="lazy">
+              </iframe>
+            </div>
+            <div class="meta">
+              <span class="name">Lifestyle Motion</span>
+              <span class="sub">Video / Social cut</span>
+              <a class="video-link" href="https://youtu.be/TF3xlW-9c7E" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+            </div>
+          </article>
+
+          <a class="work-card" href="#" data-type="images">
+            <div class="thumb">
+              <img src="images/Screenshot 2026-03-11 163849 3.png" alt="Motion project" loading="lazy" />
+            </div>
+            <div class="meta">
+              <span class="name">Motion Project</span>
+              <span class="sub">Image / Dynamic brand</span>
+            </div>
+          </a>
+
+  <a class="work-card" href="#" data-type="videos">
+            <div class="thumb">
+              <video muted loop playsinline controls preload="metadata">
+                <source src="videos/WhatsApp Video 2026-06-01 at 1.19.07 PM.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="meta">
+              <span class="name">Lifestyle Motion</span>
+              <span class="sub">Video / Social cut</span>
+            </div>
+          </a>
+          <a class="work-card" href="#" data-type="images">
+            <div class="thumb">
+              <img src="images/Screenshot 2026-03-11 163849 2.png" alt="Lifestyle project" loading="lazy" />
+            </div>
+            <div class="meta">
+              <span class="name">Lifestyle Project</span>
+              <span class="sub">Image / Soft tones</span>
+            </div>
+          </a>
+
+          <article class="work-card" data-type="videos">
+            <div class="thumb">
+              <iframe
+                src="https://www.youtube.com/embed/ZsOGE6KTbc0?rel=0&modestbranding=1"
+                title="Travel Motion YouTube video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                loading="lazy">
+              </iframe>
+            </div>
+            <div class="meta">
+              <span class="name">Travel Motion</span>
+              <span class="sub">Video / Location story</span>
+              <a class="video-link" href="https://youtu.be/ZsOGE6KTbc0" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+
+      <a class="back-top" href="#top" aria-label="Back to top">
+        <span>Back to top</span>
+        <span class="arrow" aria-hidden="true">↑</span>
+      </a>
+
+      <div class="copyright">© Cosse</div>
+    </div>
+  </footer>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    const navOverlay = document.getElementById('navOverlay');
+    const navClose = document.getElementById('navClose');
+    const navLinks = navPanel.querySelectorAll('.nav-link');
+
+    function openMenu(){
+      navPanel.classList.add('open');
+      navOverlay.classList.add('open');
+      navToggle.classList.add('open');
+      navToggle.setAttribute('aria-expanded', 'true');
+      navClose.focus();
+    }
+
+    function closeMenu(){
+      navPanel.classList.remove('open');
+      navOverlay.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+      navToggle.focus();
+    }
+
+    navToggle.addEventListener('click', () => {
+      if (navPanel.classList.contains('open')) closeMenu();
+      else openMenu();
+    });
+
+    navClose.addEventListener('click', closeMenu);
+    navOverlay.addEventListener('click', closeMenu);
+
+    navLinks.forEach((link) => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && navPanel.classList.contains('open')) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      const clickedInside = navPanel.contains(event.target) || navToggle.contains(event.target);
+      if (!clickedInside && navPanel.classList.contains('open')) closeMenu();
+    });
+
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.work-card');
+
+    function setFilter(filter) {
+      cards.forEach((card) => {
+        const type = card.dataset.type;
+        const show =
+          filter === 'all' ||
+          (filter === 'images' && type === 'images') ||
+          (filter === 'videos' && type === 'videos');
+
+        card.hidden = !show;
+      });
+
+      filterButtons.forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+    }
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => setFilter(btn.dataset.filter));
+    });
+
+    setFilter('all');
+  </script>
+</body>
+</html>

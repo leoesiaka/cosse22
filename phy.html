@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosse — Philosophy</title>
+  <style>
+    :root{
+      --bg:#d9d9d9;
+      --panel:#efefef;
+      --text:#111111;
+      --muted:#575757;
+      --line:#cfcfcf;
+      --footer:#e2e2e2;
+
+      --burger-size:64px;
+      --burger-bar:32px;
+      --burger-bar-mid:24px;
+      --burger-bar-short:16px;
+      --burger-rest:#7b7b7b;
+      --burger-hover:#000000;
+
+      --max:1180px;
+      --panel-dark:rgba(18,18,18,.88);
+      --panel-border:rgba(255,255,255,.14);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:var(--bg);
+      overflow-x:hidden;
+      position:relative;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.65) 0%, rgba(255,255,255,.18) 18%, rgba(255,255,255,0) 42%),
+        linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,0) 30%, rgba(0,0,0,.04) 100%);
+      opacity:.7;
+    }
+
+    a{color:inherit; text-decoration:none}
+    img{max-width:100%; display:block}
+
+    main, footer{
+      position:relative;
+      z-index:1;
+    }
+
+    .container{
+      width:min(var(--max), calc(100% - 48px));
+      margin:0 auto;
+    }
+
+    /* HERO */
+    .hero{
+      min-height:100vh;
+      position:relative;
+      overflow:hidden;
+      background:#000;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.46)),
+        url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=80') center center / cover no-repeat;
+      z-index:0;
+      transform:scale(1.02);
+      filter:grayscale(.25) contrast(1.02) brightness(.92);
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255,255,255,.14), rgba(0,0,0,.22) 55%, rgba(0,0,0,.34) 100%);
+      z-index:1;
+    }
+
+    .hero-topbar{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      z-index:5;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      pointer-events:none;
+      gap:16px;
+    }
+
+    .hero-logo{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:auto;
+      flex:0 0 auto;
+    }
+
+    .hero-logo img{
+      display:block;
+      width:170px;
+      height:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 8px 18px rgba(0,0,0,.18));
+    }
+
+    .nav-shell{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      pointer-events:auto;
+      justify-content:flex-end;
+    }
+
+    .nav-toggle{
+      width:var(--burger-size);
+      height:var(--burger-size);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:flex-end;
+      gap:8px;
+      background:transparent;
+      border:0;
+      padding:0 10px 0 0;
+      cursor:pointer;
+      position:relative;
+      z-index:30;
+      outline:none;
+    }
+
+    .nav-toggle:focus-visible{
+      outline:2px solid rgba(255,255,255,.45);
+      outline-offset:4px;
+      border-radius:14px;
+    }
+
+    .burger-line{
+      height:4px;
+      border-radius:999px;
+      background:var(--burger-rest);
+      transition:
+        transform .22s ease,
+        width .22s ease,
+        background .22s ease,
+        opacity .22s ease;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .line-1{ width:var(--burger-bar); }
+    .line-2{ width:var(--burger-bar-mid); }
+    .line-3{ width:var(--burger-bar-short); }
+
+    .nav-toggle:hover .burger-line,
+    .nav-toggle:focus-visible .burger-line{
+      background:var(--burger-hover);
+    }
+
+    .nav-toggle.open .line-1{
+      width:30px;
+      transform:translateY(12px) rotate(45deg);
+    }
+
+    .nav-toggle.open .line-2{
+      opacity:0;
+      transform:translateX(8px);
+    }
+
+    .nav-toggle.open .line-3{
+      width:30px;
+      transform:translateY(-12px) rotate(-45deg);
+    }
+
+    .nav-panel{
+      position:fixed;
+      top:0;
+      right:0;
+      width:min(420px, calc(100vw - 28px));
+      height:100vh;
+      padding:18px;
+      background:var(--panel-dark);
+      border-left:1px solid var(--panel-border);
+      backdrop-filter:blur(14px);
+      box-shadow:-22px 0 54px rgba(0,0,0,.28);
+      transform:translateX(102%);
+      transition:transform .28s ease;
+      z-index:40;
+      overflow:auto;
+    }
+
+    .nav-panel.open{
+      transform:translateX(0);
+    }
+
+    .nav-panel-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:18px;
+      padding:0 4px 14px;
+      border-bottom:1px solid rgba(255,255,255,.12);
+    }
+
+    .nav-panel-title{
+      color:#fff;
+      font-size:12px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      font-weight:800;
+    }
+
+    .nav-close{
+      width:42px;
+      height:42px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:background .18s ease, transform .18s ease, border-color .18s ease;
+      flex:0 0 auto;
+    }
+
+    .nav-close:hover,
+    .nav-close:focus-visible{
+      background:rgba(255,255,255,.14);
+      border-color:rgba(255,255,255,.2);
+      transform:translateY(-1px);
+      outline:none;
+    }
+
+    .nav-close span{
+      font-size:28px;
+      line-height:1;
+      transform:translateY(-1px);
+    }
+
+    .nav-links{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .nav-link{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 15px;
+      border-radius:16px;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.08);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      transition:background .18s ease, transform .18s ease, border-color .18s ease;
+      min-height:50px;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible{
+      background:rgba(255,255,255,.16);
+      border-color:rgba(255,255,255,.18);
+      transform:translateX(-2px);
+      outline:none;
+    }
+
+    .nav-link small{
+      opacity:.72;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    .nav-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.2);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .22s ease;
+      z-index:35;
+    }
+
+    .nav-overlay.open{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .hero-content{
+      position:relative;
+      z-index:3;
+      min-height:100vh;
+      display:flex;
+      align-items:flex-end;
+      padding:120px 0 64px;
+    }
+
+    .hero-copy{
+      width:min(var(--max), calc(100% - 48px));
+      margin:0 auto;
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:14px;
+    }
+
+    .hero-kicker{
+      font-size:12px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      opacity:.9;
+      margin:0;
+    }
+
+    .hero-title{
+      margin:0;
+      font-size:clamp(2.8rem, 6vw, 6rem);
+      line-height:.92;
+      letter-spacing:-.06em;
+      font-weight:800;
+      max-width:11ch;
+      text-wrap:balance;
+      text-shadow:0 10px 22px rgba(0,0,0,.22);
+    }
+
+    .hero-scroll{
+      position:absolute;
+      left:50%;
+      bottom:22px;
+      transform:translateX(-50%);
+      z-index:3;
+      color:#fff;
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+      opacity:.92;
+      text-shadow:0 2px 10px rgba(0,0,0,.18);
+    }
+
+    .hero-scroll .chev{
+      width:16px;
+      height:16px;
+      border-right:2px solid #fff;
+      border-bottom:2px solid #fff;
+      transform:rotate(45deg);
+    }
+
+    /* PHILOSOPHY CONTENT */
+    .section-block{
+      padding:72px 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.48), rgba(232,232,232,.92)),
+        var(--panel);
+      border-top:1px solid #e8e8e8;
+      border-bottom:1px solid #dcdcdc;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
+    }
+
+    .section-grid{
+      display:grid;
+      grid-template-columns:180px minmax(0, 1fr);
+      gap:40px;
+      align-items:start;
+    }
+
+    .section-label{
+      font-size:12px;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      margin:4px 0 0;
+      color:#4c4c4c;
+    }
+
+    .philosophy-box{
+      border-top:1px solid var(--line);
+      padding-top:22px;
+    }
+
+    .philosophy-text{
+      margin:0;
+      font-size:clamp(1.8rem, 4vw, 3.6rem);
+      line-height:1.1;
+      letter-spacing:-.05em;
+      font-weight:800;
+      max-width:18ch;
+      color:#111;
+    }
+
+    .philosophy-subtext{
+      margin:18px 0 0;
+      max-width:70ch;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:1rem;
+    }
+
+    .philosophy-list{
+      margin:28px 0 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:14px;
+      max-width:70ch;
+    }
+
+    .philosophy-list li{
+      padding:14px 0;
+      border-bottom:1px solid var(--line);
+      color:#2a2a2a;
+      line-height:1.7;
+    }
+
+    .philosophy-quote{
+      margin-top:34px;
+      padding:22px 0 0;
+      border-top:1px solid var(--line);
+      color:#1a1a1a;
+      font-size:1.05rem;
+      line-height:1.8;
+      font-style:italic;
+      max-width:70ch;
+    }
+
+    /* FOOTER */
+    .site-footer{
+      background:var(--footer);
+      border-top:1px solid #d1d1d1;
+      padding:18px 24px;
+      font-size:14px;
+    }
+
+    .footer-inner{
+      width:min(var(--max), 100%);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .footer-links{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      color:#222;
+      flex-wrap:wrap;
+    }
+
+    .footer-links a:hover{text-decoration:underline}
+
+    .back-top{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      color:#000;
+      font-weight:500;
+      white-space:nowrap;
+    }
+
+    .back-top .arrow{
+      font-size:26px;
+      line-height:1;
+      transform:translateY(-1px);
+    }
+
+    .copyright{
+      color:#111;
+      white-space:nowrap;
+    }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero-topbar{
+        top:10px;
+        left:10px;
+        right:10px;
+      }
+
+      :root{
+        --burger-size:58px;
+        --burger-bar:29px;
+        --burger-bar-mid:22px;
+        --burger-bar-short:14px;
+      }
+
+      .hero-logo img{
+        width:148px;
+      }
+
+      .hero-content{
+        padding-top:110px;
+      }
+
+      .section-grid{
+        grid-template-columns:1fr;
+        gap:18px;
+      }
+
+      .philosophy-text{
+        max-width:100%;
+      }
+    }
+
+    @media (max-width: 640px){
+      .container,
+      .hero-copy{
+        width:min(var(--max), calc(100% - 28px));
+      }
+
+      .hero-logo img{
+        width:132px;
+      }
+
+      .hero-content{
+        padding-top:100px;
+      }
+
+      .hero-title{
+        max-width:100%;
+      }
+
+      .section-block{
+        padding:56px 0;
+      }
+
+      .hero-content{
+        padding:120px 18px 72px;
+      }
+
+      .nav-panel{
+        width:100vw;
+        border-left:0;
+        border-radius:0;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+  <main>
+    <section class="hero">
+      <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
+      <div class="hero-topbar">
+        <a class="hero-logo" href="index.html" aria-label="Home">
+          <img src="images/logo.png" alt="Logo" />
+        </a>
+
+        <div class="nav-shell">
+          <button
+            class="nav-toggle"
+            id="navToggle"
+            type="button"
+            aria-label="Open navigation"
+            aria-expanded="false"
+            aria-controls="navPanel"
+          >
+            <span class="burger-line line-1" aria-hidden="true"></span>
+            <span class="burger-line line-2" aria-hidden="true"></span>
+            <span class="burger-line line-3" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
+      <nav class="nav-panel" id="navPanel" aria-label="Page links">
+        <div class="nav-panel-header">
+          <div class="nav-panel-title">Work</div>
+          <button class="nav-close" id="navClose" type="button" aria-label="Close navigation">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+
+   
+        <div class="nav-links">
+          <a class="nav-link" href="index.html"><span>Work</span><a>
+          <a class="nav-link" href="ourdna.html"><span>DNA</span></a>
+          <a class="nav-link" href="phy.html"><span>Philosophy</span></a>
+          <a class="nav-link" href="service.html"><span>Service Offering</span></a>
+          <a class="nav-link" href="ads.html"><span>Advertising</span></a>
+          <a class="nav-link" href="media.html"><span>Media Management</span></a>
+          <a class="nav-link" href="how.html"><span>How We Work</span></a>
+          <a class="nav-link" href="howit.html"><span>Why It Works</span></a>
+          <a class="nav-link" href="contact.html"><span>Contact Us</span></a>
+        </div>
+      </nav>
+
+      <div class="hero-content">
+        <div class="hero-copy">
+          <div class="hero-kicker">Our Philosophy</div>
+          <h1 class="hero-title">Simple at heart.</h1>
+        </div>
+      </div>
+
+      <a class="hero-scroll" href="#philosophy" aria-label="Scroll to content">
+        <span>Scroll</span>
+        <span class="chev" aria-hidden="true"></span>
+      </a>
+    </section>
+
+    <section class="section-block" id="philosophy">
+      <div class="container">
+        <div class="section-grid">
+          <div class="section-label">OUR PHILOSOPHY</div>
+          <div>
+            <div class="philosophy-box">
+              <h2 class="philosophy-text">HUMAN BEINGS ARE SIMPLE AT HEART AND CAN ALWAYS BE ENGAGED IN SIMPLE WAYS.</h2>
+
+              <ul class="philosophy-list">
+                <li>We believe in simple ideas that connect quickly.</li>
+                <li>We value clear communication over unnecessary complexity.</li>
+                <li>We create work that feels direct, human, and lasting.</li>
+              </ul>
+
+              <p class="philosophy-quote">
+                “Good communication should feel natural, clear, and simple.”
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+
+      <a class="back-top" href="#top" aria-label="Back to top">
+        <span>Back to top</span>
+        <span class="arrow" aria-hidden="true">↑</span>
+      </a>
+
+      <div class="copyright">© Cosse</div>
+    </div>
+  </footer>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    const navOverlay = document.getElementById('navOverlay');
+    const navClose = document.getElementById('navClose');
+    const navLinks = navPanel.querySelectorAll('.nav-link');
+
+    function openMenu(){
+      navPanel.classList.add('open');
+      navOverlay.classList.add('open');
+      navToggle.classList.add('open');
+      navToggle.setAttribute('aria-expanded', 'true');
+      navClose.focus();
+    }
+
+    function closeMenu(){
+      navPanel.classList.remove('open');
+      navOverlay.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+      navToggle.focus();
+    }
+
+    navToggle.addEventListener('click', () => {
+      if (navPanel.classList.contains('open')) closeMenu();
+      else openMenu();
+    });
+
+    navClose.addEventListener('click', closeMenu);
+    navOverlay.addEventListener('click', closeMenu);
+
+    navLinks.forEach((link) => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && navPanel.classList.contains('open')) {
+        closeMenu();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      const clickedInside = navPanel.contains(event.target) || navToggle.contains(event.target);
+      if (!clickedInside && navPanel.classList.contains('open')) closeMenu();
+    });
+  </script>
+</body>
+</html>
